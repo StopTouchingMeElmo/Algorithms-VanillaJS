@@ -1,5 +1,7 @@
 //ES6 Классы в JS
-//Классы удобны по причине того, что с их помощью можно реализовывать полноценное наследование
+//Классы удобны по причине того, что с их помощью можно реализовывать полноценное наследование.
+//Классы - это удобный синтаксис для создания объектов.
+//Можно выносить базовую логику в базовые классы, задвать методы в прототипе и т. д.
 
 
 //обычный способ создния объекта
@@ -86,3 +88,60 @@ const cat = new Cat({
 
 //------------------------------------------------------------------------------------
 //EXAMPLES.
+
+class Component {
+    constructor(selector) {
+        //через $ указываются переменные, которые содержат в себе DOM node
+        this.$el = document.querySelector(selector)
+    }
+
+    hide() {
+        //style доступен у любого дом элемента. Меняем css стили.
+        this.$el.style.display = 'none'
+    }
+
+    show() {
+        this.$el.style.display = 'block'
+    }
+}
+
+class Box extends Component {
+    constructor(options) {
+        super(options.selector) //с помощью super получаем доступ к constructor родительского класса Component.
+        //Так как родит. конструктор принимает только один параметр (селектор),
+        //то передаем в него только строку поля selector. Наш объект(options).selector
+
+        //после вызова метода super у нас появился доступ к переменной this.$el:
+        this.$el.style.width = this.$el.style.height = options.size + 'px';
+        this.$el.style.background = options.color;
+    }
+}
+
+const box1 = new Box({
+    selector: '#box1',
+    size: 100,
+    color: 'red'
+})
+
+class Circle extends Box {
+    constructor(options) {
+        super(options)
+        this.$el.style.borderRadius = '50%'
+    }
+}
+
+const circle1 = new Circle({
+    selector: "#circle1",
+    size: 200,
+    color: 'green'
+})
+
+//В шаблоне
+//<div id="box1"></div>
+//<div id="circle1"></div>
+
+//В консоле прячем и показваем красный квардат и зеленый круг
+//circle1.hide()
+//box1.hide()
+//circle1.show()
+//box1.show()
