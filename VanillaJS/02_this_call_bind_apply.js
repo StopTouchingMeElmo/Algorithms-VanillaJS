@@ -79,3 +79,6 @@ Array.prototype.multyArr = function (num) {
 
 console.log(arr.multyArr(4));
 console.log(arr2.multyArr(7));
+
+//>>[ 4, 8, 12, 16, 20 ]
+//>>[ 21, 35, 49 ]
