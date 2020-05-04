@@ -1,4 +1,4 @@
-//Практические примеры применения:
+//10_Практические примеры применения:
 
 //Ex.1
 
@@ -86,9 +86,7 @@ const withHiddenProps = (target, prefix = '_') => {
         // То есть мы обращаемся не к передаваемому объекту, а к Proxy (reciever), в котором, с помощью ownKeys мы исключили
         // нужные ключи по префиксу "_".
         // Другими словами перенастраиваем метод get с передаваемого объекта, на его обертку (объект Proxy)
-        get: (obj, prop, reciever) => {
-            (prop in reciever) ? obj[prop]: void 0 // void 0 тоже возвращает undefined, можно написать напрямую undefined
-        }
+        get: (obj, prop, receiver) => (prop in receiver) ? obj[prop] : void 0 // void 0 тоже возвращает undefined, можно написать напрямую undefined
     })
 }
 
@@ -97,6 +95,39 @@ const data = withHiddenProps({
     age: 33,
     _uid: '12345' //должно быть скрыто в любых вариантах запроса
 })
+
+//Result output:
+
+//>>data
+//Proxy {name: "Steve", age: 33, _uid: "12345"}
+
+//Через get:
+//>>data.name
+//"Steve"
+//>>data.age
+//33
+//>>data._uid
+//undefined
+
+//Через has:
+//>>'_uid' in data
+//false
+
+//Через цикл (get):
+//>>for(let key in data) console.log(key)
+//name
+//age
+//undefined
+
+//>>Object.keys(data)
+//["name", "age"]
+
+//---------------------------------------------------------------------------------------------------------------------
+//Ex.4
+//Optimization
+const userData = [
+
+]
 
 //По сути в примере был реализован функционал записи массива в хэш таблицу.
 //При первом обращении мы присваиваим элементу массива его уникальное имя в хэш таблице,
