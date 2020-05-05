@@ -125,10 +125,87 @@ const data = withHiddenProps({
 //---------------------------------------------------------------------------------------------------------------------
 //Ex.4
 //Optimization
-const userData = [
-
-]
 
 //По сути в примере был реализован функционал записи массива в хэш таблицу.
 //При первом обращении мы присваиваим элементу массива его уникальное имя в хэш таблице,
 //при повторном обращении используем поиск по этому имени. 
+
+const userData = [{
+        id: 11,
+        name: 'Steve',
+        job: 'Fullstack',
+        age: '37'
+    },
+    {
+        id: 22,
+        name: 'Mary',
+        job: 'Designer',
+        age: '25'
+    },
+    {
+        id: 33,
+        name: 'Bill',
+        job: 'Backend',
+        age: '40'
+    },
+    {
+        id: 44,
+        name: 'Elon',
+        job: 'Frontend',
+        age: '30'
+    }
+]
+
+//>>>userData
+//[{…}, {…}, {…}, {…}]
+//>>userData.find(el => el.id ===4)
+//{id: 4, name: "Elon", job: "Frontend", age: "30"}
+
+//Метод find все равно итерирует каждый элемент массива. Если массив будет состоять из миллиона элементов, то потребуется
+//совершать миллион итераций при каждом поиске, а это очень затратная операция.
+//С помощью Proxy мы можем создать обертку, которая оптимизирует этот процесс.
+
+// Для решения этой задачи просто создадим хэш-таблицу:
+const index = {}
+userData.forEach(el => index[el.id] = el)
+
+//>>index
+//{11: {…}, 22: {…}, 33: {…}, 44: {…}}
+//11: {id: 11, name: "Steve", job: "Fullstack", age: "37"}
+//22: {id: 22, name: "Mary", job: "Designer", age: "25"}
+//33: {id: 33, name: "Bill", job: "Backend", age: "40"}
+//44: {id: 44, name: "Elon", job: "Frontend", age: "30"}
+//__proto__: Object
+
+//Этому принципу будем следовать реализуя данный класс через Proxy:
+// Проксировать мы будем глобальный класс Array
+const IndexedArray = new Proxy(Array, {
+    construct(target, [args]) { //Этот метод ставит ловушку на момент, когда мы обращаемся через ключевое слово new
+        console.log(target) //глобальный класс Array //ƒ Array() { [native code] }
+        console.log([args]) //передаваемый массив //[Array(4)]
+        //default: повторяем логику базового определения массивов
+        return new target(...args) // то же самое что создать массив через: const h = new Array(2, 4, 5, 6)// h = [2, 4, 5, 6]
+    }
+})
+
+const h = new IndexedArray([{
+    id: 11,
+    name: 'Steve',
+    job: 'Fullstack',
+    age: '37'
+}, {
+    id: 22,
+    name: 'Mary',
+    job: 'Designer',
+    age: '25'
+}, {
+    id: 33,
+    name: 'Bill',
+    job: 'Backend',
+    age: '40'
+}, {
+    id: 44,
+    name: 'Elon',
+    job: 'Frontend',
+    age: '30'
+}])
