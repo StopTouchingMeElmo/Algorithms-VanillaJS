@@ -183,12 +183,23 @@ const IndexedArray = new Proxy(Array, {
     construct(target, [args]) { //Этот метод ставит ловушку на момент, когда мы обращаемся через ключевое слово new
         console.log(target) //глобальный класс Array //ƒ Array() { [native code] }
         console.log([args]) //передаваемый массив //[Array(4)]
+        //повторяем логику создания хэш таблицы:
+        //на этот раз мы будем это делать всего один раз при создании инстанса класса, в отличие от первого подхода.(!)
+        const index2 = {}
+        args.forEach(el => index2[el.id] = el)
         //default: повторяем логику базового определения массивов
-        return new target(...args) // то же самое что создать массив через: const h = new Array(2, 4, 5, 6)// h = [2, 4, 5, 6]
+        //return new target(...args) //default: то же самое что создать массив через: const h = new Array(2, 4, 5, 6)// h = [2, 4, 5, 6]
+        // возвращаемый массив мы оборачиваем в прокси, чтобы реализовать хэндлеры и внести изменения в логику, отличную от
+        // дефолтного создания массивов.
+        return new Proxy(new target(...args), { //new target(...args) это массив (arr)
+            get(arr, prop) { //ловушка на обращение к свойствам массива users
+
+            }
+        })
     }
 })
 
-const h = new IndexedArray([{
+const users = new IndexedArray([{
     id: 11,
     name: 'Steve',
     job: 'Fullstack',
