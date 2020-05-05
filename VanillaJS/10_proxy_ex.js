@@ -193,7 +193,24 @@ const IndexedArray = new Proxy(Array, {
         // дефолтного создания массивов.
         return new Proxy(new target(...args), { //new target(...args) это массив (arr)
             get(arr, prop) { //ловушка на обращение к свойствам массива users
+                // конструкция switch/case, где, если никакой case не сработал - вернем свойство, к которому обращались - default get
+                switch (prop) { //switch делается по свойствам - базовое применение
+                    case 'push': // т.е. если мы обращаемся к методу push, то:
+                        return el => {
+                            // сначала повторяем default функционал push.
+                            arr[prop].call(arr, el) // = arr['push']/ Вызываем метод пуш в контексте текущего массива и передаем методу добавляемый в массив элемент 
+                            //метод call для вызова, т к мы точно знаем, что передаем один параметр (элемент) vs apply
 
+                            // также пополняем нашу хэш таблицу добавленным в массив элементом:(!)
+                            index2[el.id] = el
+                        }
+                        // тут мы реализуем НОВЫЙ метод поиска по хэш таблице, ради этого функционала мы проксировали класс Array(!)
+                    case 'findByIndex':
+                        return ind => index2[ind]
+
+                    default:
+                        return arr[prop]
+                }
             }
         })
     }
@@ -220,3 +237,23 @@ const users = new IndexedArray([{
     job: 'Frontend',
     age: '30'
 }])
+
+//Output default:
+//>>users
+//Proxy {0: {…}, 1: {…}, 2: {…}, 3: {…}} //Наш массив теперь прокси
+//>>users[0]
+//{id: 11, name: "Steve", job: "Fullstack", age: "37"}
+
+//>>users.push({id: 777, name: 'Joe'})
+//>>users[4]
+//{id: 777, name: "Joe"}
+
+//Output Custom:
+//>>users.findByIndex(777)
+//{id: 777, name: "Joe"}
+
+//users.findByIndex(44)
+//{id: 44, name: "Elon", job: "Frontend", age: "30"}
+
+//Таким образом, мы реализовали поиск по хэш таблице, что существенно ускорит работу с  массивами - инстансами нашего прокси класса.
+//Пример оптимизации с помощью класса Proxy.
