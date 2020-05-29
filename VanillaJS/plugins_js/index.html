@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Используем стили только для кнопок -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/modal.css">
+    <title>JS Plugins</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Modal window</h1>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum nesciunt ducimus voluptas? Esse tempore
+            consequuntur aliquam at, sit nostrum eaque possimus pariatur laborum, cupiditate exercitationem quas fugit
+            incidunt ducimus vel ea voluptas libero maxime unde corrupti. Voluptatum, dolorum possimus non repellendus
+            dolore minus tenetur quos necessitatibus dicta accusamus! Rerum perferendis, adipisci hic blanditiis enim
+            corrupti sapiente. Neque aut natus saepe? Et corporis neque voluptatem, quod ab laborum aspernatur maxime
+            rem ex. Necessitatibus perferendis minus illum aspernatur ad eligendi incidunt doloribus a obcaecati.
+            Inventore, nihil. Vel nulla dolorum maiores laudantium temporibus omnis delectus. Accusantium officia
+            cupiditate, quasi omnis nesciunt maxime veritatis.</p>
+    </div>
+
+    <!-- Наше модальное окно -->
+    <div class="wmodal">
+        <div class="modal-overlay">
+            <div class="modal-window">
+                <div class="modal-header">
+                    <span class="modal-title">Modal window</span>
+                    <span class="modal-close">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <p>Lorem ipsum dolor sit.</p>
+                    <p>Lorem ipsum dolor sit.</p>
+                </div>
+                <div class="modal-footer">
+                    <button>Ok</button>
+                    <button>Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Базовый объект, к которому, в дальнейшем, будем подключать различные плагины -->
+    <script src="base.js"></script>
+    <!-- Плагины. Подключаем после base, чтобы в плагинах был доступен объект $ -->
+    <script src="plugins/modal.js"></script>
+    <!-- Само приложение -->
+    <script src="index.html"></script>
+</body>
+
+</html>
