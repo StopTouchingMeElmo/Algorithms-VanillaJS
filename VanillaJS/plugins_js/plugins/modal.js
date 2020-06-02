@@ -40,6 +40,12 @@ $.modal = function (options) {
     const animation_hide = 400
     let closing = false // добавляем защиту на случай вызова функции open во время выполнения функции close
 
+    let title = $modal.querySelector('.modal-title').textContent = options.title // 1
+
+    $modal.querySelector('.modal-close').id = 'mClose' // 2
+    let modalClose = document.getElementById('mClose');
+    !(options.closable) && modalClose.parentNode.removeChild(modalClose)
+
     return {
         open() {
             !closing && $modal.classList.add('open')
@@ -53,6 +59,10 @@ $.modal = function (options) {
                 closing = false
             }, animation_hide)
         },
+        /*  setTitle() {
+             let title = $modal.querySelector('.modal-title')
+             title.textContent = options.title
+         }, */
         destroy() {}
     }
 }
