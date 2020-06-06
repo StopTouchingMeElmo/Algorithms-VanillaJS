@@ -4,8 +4,12 @@
 // Наш экземпляр м.о., у которого уже есть методы родителя (modal.js)
 
 const options = {
-    title: 'New Title text 4',
-    closable: true
+    title: 'New Title text 5',
+    closable: true,
+    content: `<span>Lorem, <b>ipsum dolor sit amet consectetur adipisicing elit</b>.</span> 
+    <p><b>Et cum ea dignissimos.</b></p>
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing.</p>`,
+    width: '300px'
 }
 
 const myModal = $.modal(options)

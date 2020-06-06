@@ -11,18 +11,18 @@
 
 // Переносим наше html окно в системную функцию, создающую экземпляр м.о.:
 function _createModal(options) {
+    const default_width = '600px'
     const modal = document.createElement('div')
     modal.classList.add('wmodal')
     modal.insertAdjacentHTML('afterbegin', `
-    <div class="modal-overlay">
-        <div class="modal-window">
+    <div class="modal-overlay" data-mmm="true">
+        <div class="modal-window" style="width: ${options.width || default_width};">
             <div class="modal-header">
-                <span class="modal-title">Modal window</span>
-                <span class="modal-close">&times;</span>
+                <span class="modal-title">${options.title || 'No title yet'}</span>
+                ${options.closable ? `<span class="modal-close" data-mmm="true">&times;</span>`:''}
             </div>
             <div class="modal-body">
-                <p>Lorem ipsum dolor sit.</p>
-                <p>Lorem ipsum dolor sit.</p>
+                ${options.content || ''}
             </div>
             <div class="modal-footer">
                 <button>Ok</button>
@@ -40,13 +40,7 @@ $.modal = function (options) {
     const animation_hide = 400
     let closing = false // добавляем защиту на случай вызова функции open во время выполнения функции close
 
-    let title = $modal.querySelector('.modal-title').textContent = options.title // 1
-
-    $modal.querySelector('.modal-close').id = 'mClose' // 2
-    let modalClose = document.getElementById('mClose');
-    !(options.closable) && modalClose.parentNode.removeChild(modalClose)
-
-    return {
+    const methObj = {
         open() {
             !closing && $modal.classList.add('open')
         },
@@ -59,12 +53,46 @@ $.modal = function (options) {
                 closing = false
             }, animation_hide)
         },
-        /*  setTitle() {
-             let title = $modal.querySelector('.modal-title')
-             title.textContent = options.title
-         }, */
-        destroy() {}
+        setContent: {
+            set(htmlContent) {
+                console.log(htmlContent)
+                $modal.querySelector('.modal-body').insertAdjacentHTML('afterbegin', htmlContent)
+            }
+        },
+        destroy() { // 5
+            $modal.parentNode.removeChild($modal)
+        }
+
     }
+
+    //через атрибут dataset
+    $modal.addEventListener('click', event => {
+        console.log('Clicked', event.target.dataset.mmm)
+        if (event.target.dataset.mmm) methObj.close()
+    })
+
+    //через селекторы
+
+    /* let title = $modal.querySelector('.modal-title').textContent = options.title // 1 */
+
+    /* $modal.querySelector('.modal-close').id = 'mClose' // 2
+    let modalClose = document.getElementById('mClose');
+    !(options.closable) && modalClose.parentNode.removeChild(modalClose) */
+
+    /*  $modal.querySelector('.modal-body').insertAdjacentHTML('afterbegin', options.content) //3 */
+
+    /*  $modal.querySelector('.modal-window').style.width = options.width // 4 */
+
+    /* $modal.querySelector('.modal-close').id = 'mClose'
+    document.getElementById('mClose').addEventListener('click', event => {
+        methObj.close()
+    }) // 6
+    $modal.querySelector('.modal-overlay').addEventListener('click', event => {
+        methObj.close()
+    }) // 7 */
+
+    return methObj
+
 }
 
 /* реализовать объект options:
