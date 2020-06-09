@@ -9,7 +9,23 @@ const options = {
     content: `<span>Lorem, <b>ipsum dolor sit amet consectetur adipisicing elit</b>.</span> 
     <p><b>Et cum ea dignissimos.</b></p>
     <p>Lorem ipsum dolor sit amet, consectetur adipisicing.</p>`,
-    width: '300px'
+    width: '300px',
+    footerBtns: [{
+            text: 'Ok',
+            type: 'primary',
+            handler() {
+                console.log('ok is clicked')
+            }
+        },
+        {
+            text: 'Cancel',
+            type: 'danger',
+            handler() {
+                myModal.close()
+            }
+        }
+
+    ]
 }
 
 const myModal = $.modal(options)

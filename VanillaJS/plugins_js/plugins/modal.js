@@ -9,7 +9,36 @@
 // Метод destroy очень важен для плагинов, чтобы избежать утечек памяти.
 // Хорошей практикой является создание анимации через css, а не через js, т.к. такой путь менее затратен.
 
-// Переносим наше html окно в системную функцию, создающую экземпляр м.о.:
+//(4)Создаем метод в прототипе, который будет добавлять элемент (наш футер) в нужное местов DOM дереве.
+// По дефолту такого метода не существует.
+Element.prototype.addElementAfter = function (element) {
+    element.parentNode.insertBefore(this, element.nextSibling)
+}
+
+function fake() {} //пустая функция для кнопок на случай отсутствия handler в объекте options
+
+//(3) Создаем системную функцию, создающую футер с кнопками:
+function _createModalFooter(arrButtons = []) {
+    if (arrButtons.length === 0) {
+        return document.createElement('div')
+    }
+    const wrap = document.createElement('div')
+    wrap.classList.add('modal-footer')
+
+    arrButtons.forEach(el => {
+        let $btn = document.createElement('button')
+        $btn.textContent = el.text
+        $btn.classList.add('btn')
+        $btn.classList.add(`btn-${el.type || 'secondary'}`)
+        $btn.onclick = el.handler || fake
+
+        wrap.appendChild($btn)
+    })
+
+    return wrap
+}
+
+//(2) Переносим наше html окно в системную функцию, создающую экземпляр м.о.:
 function _createModal(options) {
     const default_width = '600px'
     const modal = document.createElement('div')
@@ -21,28 +50,35 @@ function _createModal(options) {
                 <span class="modal-title">${options.title || 'No title yet'}</span>
                 ${options.closable ? `<span class="modal-close" data-mmm="true">&times;</span>`:''}
             </div>
-            <div class="modal-body">
+            <div class="modal-body" data-content>
                 ${options.content || ''}
             </div>
-            <div class="modal-footer">
-                <button>Ok</button>
-                <button>Cancel</button>
-            </div>
+           
         </div>
     </div>
 `)
+    const footer = _createModalFooter(options.footerBtns)
+    const bodyEl = modal.querySelector('[data-content]') // элемент-ориентир, после которого будет добавлен наш футер
+    footer.addElementAfter(bodyEl) //(4)
     document.body.appendChild(modal)
     return modal
 }
 
+//(1) Наш плагин модального окна
 $.modal = function (options) {
     const $modal = _createModal(options) // динамически создаем экземпляр м.о
     const animation_hide = 400
     let closing = false // добавляем защиту на случай вызова функции open во время выполнения функции close
+    let destroyed = false
 
     const methObj = {
         open() {
-            !closing && $modal.classList.add('open')
+            if (destroyed) {
+                console.log('Modal window is destroyed')
+            }!closing && $modal.classList.add('open')
+
+            methObj.onOpen = function () {} //10 хук
+            delete methObj.onClose
         },
         close() {
             closing = true
@@ -52,24 +88,28 @@ $.modal = function (options) {
                 $modal.classList.remove('hide')
                 closing = false
             }, animation_hide)
+
+            methObj.onClose = function () {} //9 хук
+            delete methObj.onOpen
         },
-        setContent: {
-            set(htmlContent) {
-                console.log(htmlContent)
-                $modal.querySelector('.modal-body').insertAdjacentHTML('afterbegin', htmlContent)
-            }
-        },
-        destroy() { // 5
+        onClose() {} //9 дефолтное состояние хука onClose
+
+        /* destroy() { // 5 для удобства использования метод перенесен расширением через Object.assign в return
             $modal.parentNode.removeChild($modal)
-        }
+        } */
 
     }
 
     //через атрибут dataset
-    $modal.addEventListener('click', event => {
+    /* $modal.addEventListener('click', event => {
+        console.log('Clicked', event.target.dataset.mmm) // выносим функцию event в замыкание в отдельную переменную, 
+        if (event.target.dataset.mmm) methObj.close() // чтобы в методе destroy удалить слушателя для предотвращения утечки пмяти*
+    }) */
+    let listener = event => {
         console.log('Clicked', event.target.dataset.mmm)
         if (event.target.dataset.mmm) methObj.close()
-    })
+    }
+    $modal.addEventListener('click', listener)
 
     //через селекторы
 
@@ -91,7 +131,17 @@ $.modal = function (options) {
         methObj.close()
     }) // 7 */
 
-    return methObj
+
+    return Object.assign(methObj, {
+        destroy() { // 5
+            $modal.parentNode.removeChild($modal) //удаление элемента из DOM дерева
+            destroyed = true
+            $modal.removeEventListener('click', listener) //*
+        },
+        setContent(html) { //8
+            $modal.querySelector('[data-content]').innerHTML = html
+        }
+    })
 
 }
 
