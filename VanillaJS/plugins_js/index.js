@@ -60,13 +60,13 @@ const fruits = [{
         title: 'Apples',
         price: 20,
         img: 'https://thelunchlady.ca/wp-content/uploads/2015/10/Apples-in-your-diet.jpg',
-        handler() {
+        /* handler() {
             optionsFruitsPrice.title = fruits[0].title
             optionsFruitsPrice.content = `<span>The price is:</span> 
             <p><b>${fruits[0].price}</b></p>`
             let fruitsModal = $.modal(optionsFruitsPrice)
             fruitsModal.open()
-        }
+        } */
 
     },
     {
@@ -74,40 +74,38 @@ const fruits = [{
         title: 'Oranges',
         price: 25,
         img: 'https://upload.wikimedia.org/wikipedia/commons/7/7b/Orange-Whole-%26-Split.jpg',
-        handler() {
+        /* handler() {
             optionsFruitsPrice.title = fruits[1].title
             optionsFruitsPrice.content = `<span>The price is:</span> 
             <p><b>${fruits[1].price}</b></p>`
             let fruitsModal = $.modal(optionsFruitsPrice)
             fruitsModal.open()
-        }
+        } */
     },
     {
         id: 3,
         title: 'Mango',
         price: 30,
         img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Mango_and_cross_section_edit.jpg/1200px-Mango_and_cross_section_edit.jpg',
-        handler() {
+        /* handler() {
             optionsFruitsPrice.title = fruits[2].title
             optionsFruitsPrice.content = `<span>The price is:</span> 
             <p><b>${fruits[2].price}</b></p>`
             let fruitsModal = $.modal(optionsFruitsPrice)
             fruitsModal.open()
-        }
+        } */
     }
 ]
 
-/* fruits.forEach(el => {
-    optionsFruitsPrice.title = el.title
-    optionsFruitsPrice.content = `<span>The price is:</span> 
-<p><b>${el.price}</b></p>`
-}) */
-/* function personalProps() {
-    optionsFruitsPrice.title = this.title
-    optionsFruitsPrice.content = `<span>The price is:</span> 
-<p><b>${this.price}</b></p>`
-    fruitsModal.open()
-} */
+fruits.forEach((el, ind) => {
+    el.handler = function () {
+        optionsFruitsPrice.title = fruits[ind].title
+        optionsFruitsPrice.content = `<span>The price is:</span> 
+        <p><b>${fruits[ind].price}</b></p>`
+        let fruitsModal = $.modal(optionsFruitsPrice)
+        fruitsModal.open()
+    }
+})
 // Создаем экцемпляр м.о. для нашего списка карточек
 
 
