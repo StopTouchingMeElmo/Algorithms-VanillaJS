@@ -180,3 +180,55 @@ animate.css
 При нажатии на Да Удалить динамически удаляется карточка из дом дерева.
 На основе плагина $.modal нужно сделать другой плагин $.confirm(Promise)
 */
+
+// 1. Динамически на основе массива выводим список карточек.
+function _createCardsList(fruits) {
+    const default_height = '250px'
+    const cards = document.createElement('div')
+    cards.classList.add('row')
+    for (let el of fruits) {
+        cards.insertAdjacentHTML('afterbegin', `<div class="col">
+        <div class="card">
+            <img class="card-img-top" style="height: ${default_height};"
+                src=${el.img}>
+            <div class="card-body">
+                <h5 class="card-title">${el.title}</h5>
+                <button class="btn btn-primary" data-fruits>Show price</button>
+                <button class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>`)
+        let bttn = cards.querySelector('[data-fruits]')
+        bttn.onclick = el.handler
+    }
+
+    /* fruits.forEach(el => {
+        cards.insertAdjacentHTML('afterbegin', `<div class="col">
+        <div class="card">
+            <img class="card-img-top" style="height: ${default_height};"
+                src=${el.img}>
+            <div class="card-body">
+                <h5 class="card-title">${el.title}</h5>
+                <a href="#" class="btn btn-primary">Show price</a>
+                <a href="#" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
+    </div>`)
+    }) */
+
+    const container = document.querySelector('.container')
+    container.appendChild(cards)
+    /* let butty = document.querySelectorAll('[data-fruits]')
+    console.log(butty)
+    butty.forEach(el => {
+        for (let fr of fruits) {
+            el.onclick = fr.handler
+        }
+    }) */
+    /* fruits.forEach(el => {
+        let bttn = document.querySelector('[data-fruits]')
+        bttn.onclick = el.handler
+    }) */
+
+    return cards
+}
