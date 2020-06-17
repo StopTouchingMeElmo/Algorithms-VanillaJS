@@ -30,7 +30,7 @@ const options = {
 const myModal = $.modal(options)
 //===============================================================================================
 
-// Создаем объект настроек для м.о. карточек
+// Создаем объект настроек для м.о. карточек(общий объект для м.о Price и Delete confirmation)
 let optionsFruitsPrice = {
     /* title: 'gg',
     content: 'gg', */
@@ -39,9 +39,9 @@ let optionsFruitsPrice = {
     footerBtns: [{
             text: 'Ok',
             type: 'primary',
-            handler() {
+            /* handler() {
                 console.log('ok is clicked')
-            }
+            } */
         },
         /* {
             text: 'Cancel',
@@ -55,18 +55,12 @@ let optionsFruitsPrice = {
     ]
 }
 
+// Массив карточек
 const fruits = [{
         id: 1,
         title: 'Apples',
         price: 20,
         img: 'https://thelunchlady.ca/wp-content/uploads/2015/10/Apples-in-your-diet.jpg',
-        /* handler() {
-            optionsFruitsPrice.title = fruits[0].title
-            optionsFruitsPrice.content = `<span>The price is:</span> 
-            <p><b>${fruits[0].price}</b></p>`
-            let fruitsModal = $.modal(optionsFruitsPrice)
-            fruitsModal.open()
-        } */
 
     },
     {
@@ -74,46 +68,52 @@ const fruits = [{
         title: 'Oranges',
         price: 25,
         img: 'https://upload.wikimedia.org/wikipedia/commons/7/7b/Orange-Whole-%26-Split.jpg',
-        /* handler() {
-            optionsFruitsPrice.title = fruits[1].title
-            optionsFruitsPrice.content = `<span>The price is:</span> 
-            <p><b>${fruits[1].price}</b></p>`
-            let fruitsModal = $.modal(optionsFruitsPrice)
-            fruitsModal.open()
-        } */
+
     },
     {
         id: 3,
         title: 'Mango',
         price: 30,
         img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Mango_and_cross_section_edit.jpg/1200px-Mango_and_cross_section_edit.jpg',
-        /* handler() {
-            optionsFruitsPrice.title = fruits[2].title
-            optionsFruitsPrice.content = `<span>The price is:</span> 
-            <p><b>${fruits[2].price}</b></p>`
-            let fruitsModal = $.modal(optionsFruitsPrice)
-            fruitsModal.open()
-        } */
+
     }
 ]
 
 fruits.forEach((el, ind) => {
-    el.handler = function () {
+    el.showPrice = function () {
+        optionsFruitsPrice.footerBtns.length = 1
+        optionsFruitsPrice.footerBtns[0].text = 'Ok'
         optionsFruitsPrice.title = fruits[ind].title
         optionsFruitsPrice.content = `<span>The price is:</span> 
         <p><b>${fruits[ind].price}</b></p>`
+        // Создаем экцемпляр м.о. Price для нашего списка карточек
         let fruitsModal = $.modal(optionsFruitsPrice)
         fruitsModal.open()
     }
-})
-// Создаем экцемпляр м.о. для нашего списка карточек
+    el.del = function () {
+        const cancelBtn = {
+            text: 'Cancel',
+            type: 'danger',
+            data: 'mmm'
+        }
+        optionsFruitsPrice.title = 'Confirm deleteing'
+        optionsFruitsPrice.content = 'Are u sure?'
 
+        optionsFruitsPrice.footerBtns[0].text = 'Yes, Delete'
+        optionsFruitsPrice.footerBtns[0].data = 'ddd'
+        if (!optionsFruitsPrice.footerBtns.filter(el => el.text === 'Cancel').length >= 1) {
+            console.log(optionsFruitsPrice.footerBtns)
+            optionsFruitsPrice.footerBtns.push(cancelBtn)
+        }
+        optionsFruitsPrice.delEl = function () {
+            let cardDel = document.getElementById(`${el.id}`)
+            cardDel.parentNode.removeChild(cardDel)
+        }
+        // Создаем экцемпляр м.о. Delete confirmation для нашего списка карточек
+        let confirmModal = $.confirm(optionsFruitsPrice)
+        confirmModal.open()
+    }
+})
 
 // Вызываем функцию создания списка карточек и передаем в нее массив объектов
 _createCardsList(fruits)
-
-/* let listenerFruits = event => {
-    console.log('Clicked', event.target.dataset.fruits)
-    if (event.target.dataset.fruits) fruitsModal.open()
-}
-document.addEventListener('click', listenerFruits) */

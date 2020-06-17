@@ -16,7 +16,7 @@ Element.prototype.addElementAfter = function (element) {
 }
 
 function fake() {} //пустая функция для кнопок на случай отсутствия handler в объекте options
-
+const fakeData = ''
 //(3) Создаем системную функцию, создающую футер с кнопками:
 function _createModalFooter(arrButtons = []) {
     if (arrButtons.length === 0) {
@@ -30,7 +30,8 @@ function _createModalFooter(arrButtons = []) {
         $btn.textContent = el.text
         $btn.classList.add('btn')
         $btn.classList.add(`btn-${el.type || 'secondary'}`)
-        $btn.onclick = el.handler || fake
+        $btn.dataset[el.data] = true || fakeData
+        /* $btn.onclick = el.handler || fake */
 
         wrap.appendChild($btn)
     })
@@ -181,54 +182,86 @@ animate.css
 На основе плагина $.modal нужно сделать другой плагин $.confirm(Promise)
 */
 
+$.confirm = function (options) {
+    const $confirm = _createModal(options) // динамически создаем экземпляр м.о
+    const animation_hide = 400
+    let closing = false // добавляем защиту на случай вызова функции open во время выполнения функции close
+    let destroyed = false
+
+    const methObj = {
+        open() {
+            if (destroyed) {
+                console.log('Modal window is destroyed')
+            }!closing && $confirm.classList.add('open')
+
+            methObj.onOpen = function () {} //10 хук
+            delete methObj.onClose
+        },
+        close() {
+            closing = true
+            $confirm.classList.remove('open')
+            $confirm.classList.add('hide') // для создания анимации при закрытии окна
+            setTimeout(() => {
+                $confirm.classList.remove('hide')
+                closing = false
+            }, animation_hide)
+
+            methObj.onClose = function () {} //9 хук
+            delete methObj.onOpen
+        },
+        onClose() {} //9 дефолтное состояние хука onClose
+
+    }
+
+    let listener = event => {
+        console.log('Clicked', event.target.dataset.mmm)
+        if (event.target.dataset.mmm) methObj.close()
+        console.log('Clicked', event.target.dataset.ddd)
+        if (event.target.dataset.ddd) {
+            options.delEl()
+            methObj.close()
+        }
+    }
+    $confirm.addEventListener('click', listener)
+
+    return Object.assign(methObj, {
+        destroy() { // 5
+            $confirm.parentNode.removeChild($confirm) //удаление элемента из DOM дерева
+            destroyed = true
+            $confirm.removeEventListener('click', listener) //*
+        },
+        setContent(html) { //8
+            $confirm.querySelector('[data-content]').innerHTML = html
+        }
+    })
+}
+
 // 1. Динамически на основе массива выводим список карточек.
 function _createCardsList(fruits) {
     const default_height = '250px'
     const cards = document.createElement('div')
     cards.classList.add('row')
     for (let el of fruits) {
-        cards.insertAdjacentHTML('afterbegin', `<div class="col">
+        cards.insertAdjacentHTML('afterbegin', `<div class="col" id="${el.id}">
         <div class="card">
             <img class="card-img-top" style="height: ${default_height};"
                 src=${el.img}>
             <div class="card-body">
                 <h5 class="card-title">${el.title}</h5>
                 <button class="btn btn-primary" data-fruits>Show price</button>
-                <button class="btn btn-danger">Delete</button>
+                <button class="btn btn-danger" data-del>Delete</button>
             </div>
         </div>
     </div>`)
         let bttn = cards.querySelector('[data-fruits]')
-        bttn.onclick = el.handler
+        bttn.onclick = el.showPrice
+        let bttnDel = cards.querySelector('[data-del]')
+        bttnDel.onclick = el.del
     }
 
-    /* fruits.forEach(el => {
-        cards.insertAdjacentHTML('afterbegin', `<div class="col">
-        <div class="card">
-            <img class="card-img-top" style="height: ${default_height};"
-                src=${el.img}>
-            <div class="card-body">
-                <h5 class="card-title">${el.title}</h5>
-                <a href="#" class="btn btn-primary">Show price</a>
-                <a href="#" class="btn btn-danger">Delete</a>
-            </div>
-        </div>
-    </div>`)
-    }) */
 
     const container = document.querySelector('.container')
     container.appendChild(cards)
-    /* let butty = document.querySelectorAll('[data-fruits]')
-    console.log(butty)
-    butty.forEach(el => {
-        for (let fr of fruits) {
-            el.onclick = fr.handler
-        }
-    }) */
-    /* fruits.forEach(el => {
-        let bttn = document.querySelector('[data-fruits]')
-        bttn.onclick = el.handler
-    }) */
 
     return cards
 }
