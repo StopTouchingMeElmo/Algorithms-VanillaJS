@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Используем стили только для кнопок -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/modal.css">
+    <title>JS Plugins</title>
+</head>
+
+<body>
+    <div class="container">
+        <h3>Cards Modal Js</h3>
+        <div class="row" id="fruitsRow"></div>
+    </div>
+
+
+    <!-- Наше модальное окно -->
+    <!-- перенесено в modal.js в системную функцию _createModal -->
+    <!-- <div class="wmodal"></div> -->
+
+
+    <!-- Базовый объект, к которому, в дальнейшем, будем подключать различные плагины -->
+    <script src="base.js"></script>
+    <!-- Плагины. Подключаем после base, чтобы в плагинах был доступен объект $ -->
+    <script src="plugins/modal.js"></script>
+    <script src="plugins/confirm.js"></script><!-- так как делаем confirm на основе modal.js -->
+    <!-- Само приложение -->
+    <script src="index.js"></script>
+</body>
+
+</html>
